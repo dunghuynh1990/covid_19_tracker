@@ -1,0 +1,1 @@
+const kAPI_ALL = 'https://disease.sh/v2/all';
