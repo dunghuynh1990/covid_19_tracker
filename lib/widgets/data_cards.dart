@@ -1,5 +1,6 @@
 import 'package:covid19tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'info_cards.dart';
 
 class DataCards extends StatelessWidget {
@@ -40,12 +41,26 @@ class DataCards extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: EdgeInsets.all(8),
-            child: Text(
-              continent,
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.black54,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  continent,
+                  style: TextStyle(
+                    fontSize: kFontSize20,
+                    color: Colors.black54,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                   print('Hello World');
+                  },
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20,
+                  ),
+                ),
+              ],
             ),
           ),
           Divider(

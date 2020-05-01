@@ -10,5 +10,6 @@ const Color kDeathColor = Color(0xFF696969);
 const Color kRecoveredColor = Color(0xFF89C643);
 
 const double kFontSize30 = 30.0;
+const double kFontSize25 = 25.0;
 const double kFontSize20 = 20.0;
 const double kFontSize15 = 15.0;
