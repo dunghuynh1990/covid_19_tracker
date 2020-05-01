@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class InfoCards extends StatelessWidget {
-  InfoCards({@required this.title, @required this.data});
-
+  InfoCards({@required this.title, @required this.data, @required this.textSize, this.cardColor});
+  final formatter = new NumberFormat("#,###");
   final int data;
   final String title;
+  final double textSize;
+  final Color cardColor;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -13,7 +16,7 @@ class InfoCards extends StatelessWidget {
           child: Container(
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardColor,
               borderRadius: BorderRadius.all(
                 Radius.circular(7),
               ),
@@ -26,7 +29,7 @@ class InfoCards extends StatelessWidget {
                 )
               ],
             ),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            margin: EdgeInsets.all(8),
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -34,14 +37,14 @@ class InfoCards extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 30,
-
+                    fontSize: textSize,
                   ),
                 ),
                 Text(
-                  data.toString(),
+                  formatter.format(data),
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: textSize,
+                    color: Colors.white,
                   ),
                 ),
               ],
