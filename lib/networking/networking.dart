@@ -22,4 +22,14 @@ class NetworkHelper {
     }
   }
 
+  Future getCountriesStats() async {
+    http.Response response = await http.get('$kBASE_URL/$kAPI_COUNTRIES');
+    if (response.statusCode == 200) {
+      String data = response.body;
+      return jsonDecode(data);
+    } else {
+      print(response.statusCode);
+    }
+  }
+
 }

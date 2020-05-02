@@ -9,6 +9,8 @@ const Color kActiveColor = Color(0xFFA9A9A9);
 const Color kDeathColor = Color(0xFF696969);
 const Color kRecoveredColor = Color(0xFF89C643);
 
+const Color kTextColor = Colors.black54;
+
 const double kFontSize30 = 30.0;
 const double kFontSize25 = 25.0;
 const double kFontSize20 = 20.0;

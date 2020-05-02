@@ -1,6 +1,5 @@
 import 'package:covid19tracker/utilities/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'info_cards.dart';
 
 class DataCards extends StatelessWidget {
