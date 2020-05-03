@@ -4,7 +4,7 @@ import 'package:covid19tracker/widgets/data_cards.dart';
 import 'package:covid19tracker/widgets/info_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'countries_screen.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _DashboardState extends State<Dashboard> {
       dynamic data = await NetworkHelper().getWorldWideStats();
       var date = DateTime.fromMillisecondsSinceEpoch(data['updated']);
       setState(() {
-        updatedDate = DateFormat.yMMMMd().add_jms().format(date);
+        updatedDate = DateFormat.yMMMd().format(date);
         active = data['active'];
         deaths = data['deaths'];
         recovered = data['recovered'];
@@ -69,10 +69,7 @@ class _DashboardState extends State<Dashboard> {
         key: refreshKey,
         onRefresh: refreshList,
         child: updatedDate.length == 0
-            ? SpinKitDoubleBounce(
-                color: Colors.grey,
-                size: 100.0,
-              )
+            ? Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(
@@ -85,12 +82,12 @@ class _DashboardState extends State<Dashboard> {
                         children: <Widget>[
                           Icon(
                             Icons.timer,
-                            size: 20,
+                            size: kFontSize20,
                           ),
                           Text(
                             ' $updatedDate',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: kFontSize15,
                             ),
                           ),
                         ],
@@ -104,16 +101,16 @@ class _DashboardState extends State<Dashboard> {
                               'World Wide',
                               style: TextStyle(
                                 fontSize: kFontSize25,
-                                color: Colors.black54,
+                                color: kTextColor,
                               ),
                             ),
                             GestureDetector(
                               onTap: () {
-                                print('Hello World');
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => CountriesScreen()));
                               },
                               child: Icon(
                                 Icons.arrow_forward_ios,
-                                size: 20,
+                                size: kFontSize20,
                               ),
                             ),
                           ],
@@ -141,7 +138,7 @@ class _DashboardState extends State<Dashboard> {
                           'Continents',
                           style: TextStyle(
                             fontSize: kFontSize25,
-                            color: Colors.black54,
+                            color: kTextColor,
                           ),
                         ),
                       ),

@@ -17,6 +17,22 @@ class _CountriesScreenState extends State<CountriesScreen> {
   final formatter = new NumberFormat("#,###");
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
+  void choiceAction(String choice){
+    if(choice == kToday){
+      setState(() {
+        countriesData.sort((b, a) => a['todayCases'].compareTo(b['todayCases']));
+      });
+    }else if(choice == kActive){
+      setState(() {
+        countriesData.sort((b, a) => a['active'].compareTo(b['active']));
+      });
+    }else if(choice == kTotal){
+      setState(() {
+        countriesData.sort((b, a) => a['cases'].compareTo(b['cases']));
+      });
+    }
+  }
+
   fetchCountriesData() async {
     try {
       dynamic data = await NetworkHelper().getCountriesStats();
@@ -52,10 +68,17 @@ class _CountriesScreenState extends State<CountriesScreen> {
             onPressed: () {},
             icon: Icon(Icons.search),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
-          ),
+          PopupMenuButton<String>(
+            onSelected: choiceAction,
+            itemBuilder: (BuildContext context){
+              return kChoices.map((String choice){
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          )
         ],
       ),
       body: Container(
@@ -74,6 +97,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                       var flag = countriesData[index]['countryInfo']['flag'];
                       var active = countriesData[index]['active'];
                       var todayCases = countriesData[index]['todayCases'];
+                      var total = countriesData[index]['cases'];
                       return Container(
                         height: 80,
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -120,7 +144,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Container(
-                                              width: 150,
+                                              width: 140,
                                               child: Text(
                                                 country,
                                                 overflow: TextOverflow.ellipsis,
@@ -152,7 +176,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                   ),
                                 ),
                                 Expanded(
-                                  flex: 4,
+                                  flex: 2,
                                   child: Container(
                                     padding: EdgeInsets.only(right: 8),
                                     child: Column(
@@ -162,12 +186,38 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                         Text(
                                           formatter.format(active),
                                           style: TextStyle(
-                                            fontSize: kFontSize25,
+                                            fontSize: kFontSize15,
                                             color: kActiveColor,
                                           ),
                                         ),
                                         Text(
                                           'active',
+                                          style: TextStyle(
+                                            fontSize: kFontSize15,
+                                            color: kTextColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(
+                                          formatter.format(total),
+                                          style: TextStyle(
+                                            fontSize: kFontSize15,
+                                            color: kActiveColor,
+                                          ),
+                                        ),
+                                        Text(
+                                          'total',
                                           style: TextStyle(
                                             fontSize: kFontSize15,
                                             color: kTextColor,

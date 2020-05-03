@@ -15,3 +15,14 @@ const double kFontSize30 = 30.0;
 const double kFontSize25 = 25.0;
 const double kFontSize20 = 20.0;
 const double kFontSize15 = 15.0;
+
+const String kToday = 'Today';
+const String kActive = 'Active';
+const String kTotal = 'Total';
+
+const List<String> kChoices = <String>[
+  kToday,
+  kActive,
+  kTotal
+];
+
