@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // TODO: same screen for all countries and continents
-// TODO: Search
-// TODO: filter
+// TODO: Instant Search
+// TODO: handle search fail
+// TODO: FutureBuilder
 
 class CountriesScreen extends StatefulWidget {
   @override
@@ -13,30 +14,35 @@ class CountriesScreen extends StatefulWidget {
 }
 
 class _CountriesScreenState extends State<CountriesScreen> {
-  List countriesData;
+  List countriesData = [], searchList = [];
   final formatter = new NumberFormat("#,###");
   var refreshKey = GlobalKey<RefreshIndicatorState>();
+  Icon _searchIcon = Icon(Icons.search);
+  FocusNode _focusNode = new FocusNode();
+  List filteredNames; // names filtered by search text
+  Widget _appBarTitle = Text('COUNTRIES STATS');
+  final myController = TextEditingController();
 
-  void choiceAction(String choice){
-    if(choice == kToday){
+  void choiceAction(String choice) {
+    if (choice == kToday) {
       setState(() {
         countriesData.sort((b, a) => a['todayCases'].compareTo(b['todayCases']));
       });
-    }else if(choice == kActive){
+    } else if (choice == kActive) {
       setState(() {
         countriesData.sort((b, a) => a['active'].compareTo(b['active']));
       });
-    }else if(choice == kTotal){
+    } else if (choice == kTotal) {
       setState(() {
         countriesData.sort((b, a) => a['cases'].compareTo(b['cases']));
       });
     }
   }
 
-  fetchCountriesData() async {
+  void fetchCountriesData() async {
     try {
       dynamic data = await NetworkHelper().getCountriesStats();
-      if (mounted){
+      if (mounted) {
         setState(() {
           countriesData = data;
         });
@@ -46,10 +52,106 @@ class _CountriesScreenState extends State<CountriesScreen> {
     }
   }
 
+  void searchCountry(String country) async {
+//    List tempData = countriesData;
+    setState(() {
+      countriesData.clear();
+    });
+    try {
+      dynamic data = await NetworkHelper().getCountryStats(country);
+      print(data);
+      if (data) {
+        setState(() {
+          countriesData.add(data);
+        });
+      } else {
+
+      }
+    } catch (e) {
+      print(e);
+      AlertDialog(
+        title: new Text("Alert Dialog title"),
+        content: new Text("Alert Dialog body"),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          new FlatButton(
+            child: new Text("Close"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    }
+  }
+
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
     fetchCountriesData();
     return null;
+  }
+
+  void filterSearchResults(String query) {
+    if (query.isNotEmpty) {
+      print(query);
+      List _searchList = [];
+      searchList = countriesData.where((item) => item['country'] == "Viet").toList();
+    } else {
+      setState(() {});
+    }
+  }
+
+  void _searchPressed() {
+    setState(() {
+      if (_searchIcon.icon == Icons.search) {
+        _searchIcon = Icon(Icons.close);
+        _appBarTitle = Container(
+          decoration: BoxDecoration(
+            color: Colors.blue[400],
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: TextField(
+            controller: myController,
+            focusNode: _focusNode,
+            textInputAction: TextInputAction.search,
+            textCapitalization: TextCapitalization.words,
+            keyboardAppearance: Brightness.light,
+            autofocus: true,
+            cursorColor: Colors.white,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: kFontSize20,
+              fontWeight: FontWeight.w300,
+            ),
+            decoration: new InputDecoration(
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              border: InputBorder.none,
+              hintText: 'Search countries...',
+              hintStyle: TextStyle(
+                color: Colors.white,
+                fontSize: kFontSize20,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            onChanged: (value) {
+//              filterSearchResults(value);
+            },
+            onEditingComplete: () {
+              searchCountry(myController.text);
+              _focusNode.unfocus();
+            },
+          ),
+        );
+      } else {
+        myController.clear();
+        _searchIcon = Icon(Icons.search);
+        _appBarTitle = Text('COUNTRIES STATS');
+//        filteredNames = names;
+      }
+    });
   }
 
   @override
@@ -59,19 +161,27 @@ class _CountriesScreenState extends State<CountriesScreen> {
   }
 
   @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('COUNTRIES STATS'),
+        title: _appBarTitle,
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search),
+            onPressed: () {
+              _searchPressed();
+            },
+            icon: _searchIcon,
           ),
           PopupMenuButton<String>(
             onSelected: choiceAction,
-            itemBuilder: (BuildContext context){
-              return kChoices.map((String choice){
+            itemBuilder: (BuildContext context) {
+              return kChoices.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
@@ -82,7 +192,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
         ],
       ),
       body: Container(
-        child: countriesData == null
+        child: countriesData.length == 0
             ? Center(
                 child: CircularProgressIndicator(),
               )
@@ -99,17 +209,25 @@ class _CountriesScreenState extends State<CountriesScreen> {
                       var todayCases = countriesData[index]['todayCases'];
                       var total = countriesData[index]['cases'];
                       return Container(
+                        margin: EdgeInsets.only(left: 10),
                         height: 80,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+//                        padding: EdgeInsets.symmetric(horizontal: 0),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey[100],
-                              blurRadius: 10,
-                              offset: Offset(0, 10),
+                          border: Border(
+                            bottom: BorderSide(
+                              //                   <--- left side
+                              color: Colors.grey,
+                              width: 1.0,
                             ),
-                          ],
+                          ),
+                          color: Colors.white,
+//                          boxShadow: [
+//                            BoxShadow(
+//                              color: Colors.grey[100],
+//                              blurRadius: 10,
+//                              offset: Offset(0, 10),
+//                            ),
+//                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -186,7 +304,8 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                         Text(
                                           formatter.format(active),
                                           style: TextStyle(
-                                            fontSize: kFontSize15,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
                                             color: kActiveColor,
                                           ),
                                         ),
@@ -204,7 +323,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                 Expanded(
                                   flex: 2,
                                   child: Container(
-                                    padding: EdgeInsets.only(right: 8),
+                                    padding: EdgeInsets.only(right: 10),
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -212,7 +331,8 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                         Text(
                                           formatter.format(total),
                                           style: TextStyle(
-                                            fontSize: kFontSize15,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
                                             color: kActiveColor,
                                           ),
                                         ),
@@ -228,9 +348,6 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                   ),
                                 )
                               ],
-                            ),
-                            Divider(
-                              thickness: 1,
                             ),
                           ],
                         ),
