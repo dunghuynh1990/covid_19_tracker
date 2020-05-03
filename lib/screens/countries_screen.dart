@@ -60,28 +60,26 @@ class _CountriesScreenState extends State<CountriesScreen> {
     try {
       dynamic data = await NetworkHelper().getCountryStats(country);
       print(data);
-      if (data) {
+//      if (data) {
         setState(() {
           countriesData.add(data);
         });
-      } else {
-
-      }
+//      }
     } catch (e) {
       print(e);
-      AlertDialog(
-        title: new Text("Alert Dialog title"),
-        content: new Text("Alert Dialog body"),
-        actions: <Widget>[
-          // usually buttons at the bottom of the dialog
-          new FlatButton(
-            child: new Text("Close"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
+//      AlertDialog(
+//        title: new Text("Alert Dialog title"),
+//        content: new Text("Alert Dialog body"),
+//        actions: <Widget>[
+//          // usually buttons at the bottom of the dialog
+//          new FlatButton(
+//            child: new Text("Close"),
+//            onPressed: () {
+//              Navigator.of(context).pop();
+//            },
+//          ),
+//        ],
+//      );
     }
   }
 
@@ -211,23 +209,14 @@ class _CountriesScreenState extends State<CountriesScreen> {
                       return Container(
                         margin: EdgeInsets.only(left: 10),
                         height: 80,
-//                        padding: EdgeInsets.symmetric(horizontal: 0),
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              //                   <--- left side
                               color: Colors.grey,
                               width: 1.0,
                             ),
                           ),
                           color: Colors.white,
-//                          boxShadow: [
-//                            BoxShadow(
-//                              color: Colors.grey[100],
-//                              blurRadius: 10,
-//                              offset: Offset(0, 10),
-//                            ),
-//                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -235,7 +224,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                             Row(
                               children: <Widget>[
                                 Expanded(
-                                  flex: 6,
+                                  flex: 5,
                                   child: Container(
                                     margin: EdgeInsets.symmetric(horizontal: 10),
                                     child: Row(
@@ -304,7 +293,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                         Text(
                                           formatter.format(active),
                                           style: TextStyle(
-                                            fontSize: 17,
+                                            fontSize: kFontSize15,
                                             fontWeight: FontWeight.bold,
                                             color: kActiveColor,
                                           ),
@@ -331,7 +320,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                         Text(
                                           formatter.format(total),
                                           style: TextStyle(
-                                            fontSize: 17,
+                                            fontSize: kFontSize15,
                                             fontWeight: FontWeight.bold,
                                             color: kActiveColor,
                                           ),
